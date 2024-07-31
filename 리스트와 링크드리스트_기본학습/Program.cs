@@ -22,9 +22,20 @@ Food : Item
     {
         public class Inventory
         {
-            List<string> items = new List<string>();
-            string[] itemTypes = { "Potion", "Weapon", "Armor", "Accessory", "Food" };
-            Random random = new Random();
+            private List<Item> items;
+            private Item[] itemTypes;
+
+            public Inventory()
+            {
+                items = new List<Item>();
+                itemTypes = new Item[]
+                {
+                    new Potion("포션"),
+                    new Weapon("무기"),
+                    new Armor("방어구"),
+                    new Food("음식")
+                };
+            }
 
             public void InventoryState()
             {
@@ -39,13 +50,13 @@ Food : Item
                 Console.WriteLine("---------------------------------------------");
             }
 
-            public void AddInventoryItem()
+            public void AddInventoryItem(Item item)
             {
                 if (items.Count < 9)
                 {
-                    int index = random.Next(0, itemTypes.Length);
-                    items.Add(itemTypes[index]);
-                    Console.WriteLine($"아이템추가: {itemTypes[index]}");
+                    items.Add(item);
+                    Console.WriteLine($"아이템추가: {item}");
+                    InventoryState();
                 }
                 else
                 {
@@ -55,11 +66,11 @@ Food : Item
 
             public void RemoveInventoryItem(int index)
             {
-                if (index <= items.Count && index >= 0)
+                if (index > 0 && index <= items.Count)
                 {
-                    string removeItem = items[index-1];
-                    items.RemoveAt(index-1);
-                    Console.WriteLine($"{removeItem} 아이템이 제거되었습니다.");
+                    Console.WriteLine($"{items[index - 1]} 아이템이 제거되었습니다.");
+                    items.RemoveAt(index - 1);
+                    InventoryState();
                 }
                 else
                 {
@@ -67,18 +78,23 @@ Food : Item
                 }
             }
 
-
+            public Item GetRandomItem(Random random)
+            {
+                int ran = random.Next(0, itemTypes.Length);
+                return itemTypes[ran];
+            }
         }
 
-        public class Item
+
+
+
+        public class Item //출력시 아이템 부분이 이상하게 출력되는데 이유가 무엇일까요...ㅠㅠㅠ
         {
             public string name;
             public Item(string name)
             {
                 this.name = name;
             }
-
-
         }
 
 
@@ -115,7 +131,10 @@ Food : Item
         }
         static void Main(string[] args)
         {
+            Random random = new Random();
             Inventory inventory = new Inventory();
+            Item item;
+
             Console.WriteLine("--------------------------------------");
             Console.WriteLine("인벤토리 시스템입니다.");
             Console.WriteLine("0 입력: 랜덤 아이템 추가");
@@ -127,25 +146,25 @@ Food : Item
                 Console.Write("숫자를 입력해주세요: ");
                 string input = Console.ReadLine();
                 bool correct = int.TryParse(input, out int index);
-                if (input == null)
+
+                if (correct == false)
                 {
-                    Console.WriteLine("다시 입력해주세요");
-                }
-                else if (!correct)
-                { Console.WriteLine("다시 입력해주세요"); }
-                else if (index < 10 && index > 0)
-                {
-                    inventory.RemoveInventoryItem(index);
-                    inventory.InventoryState();
+                    Console.WriteLine("숫자를 입력해주세요");
                 }
                 else if (index == 0)
                 {
-                    inventory.AddInventoryItem();
-                    inventory.InventoryState();
+                    inventory.AddInventoryItem(inventory.GetRandomItem(random));
                 }
-
-
+                else if (index > 0 && index < 10)
+                {
+                    inventory.RemoveInventoryItem(index);
+                }
+                else
+                {
+                    Console.WriteLine("0이나 1~9의 숫자를 입력해주세요");
+                }
             }
         }
     }
 }
+
