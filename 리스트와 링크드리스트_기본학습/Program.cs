@@ -43,7 +43,7 @@ Food : Item
                 for (int i = 0; i < 9; i++)
                 {
                     if (i < items.Count)
-                        Console.WriteLine($"{i + 1}: {items[i]}");
+                        Console.WriteLine($"{i + 1}: {items[i].name}");
                     else
                         Console.WriteLine($"{i + 1}: 없음 ");
                 }
@@ -55,7 +55,7 @@ Food : Item
                 if (items.Count < 9)
                 {
                     items.Add(item);
-                    Console.WriteLine($"아이템추가: {item}");
+                    Console.WriteLine($"아이템추가: {item.name}");
                     InventoryState();
                 }
                 else
@@ -68,7 +68,7 @@ Food : Item
             {
                 if (index > 0 && index <= items.Count)
                 {
-                    Console.WriteLine($"{items[index - 1]} 아이템이 제거되었습니다.");
+                    Console.WriteLine($"{items[index - 1].name} 아이템이 제거되었습니다.");
                     items.RemoveAt(index - 1);
                     InventoryState();
                 }
@@ -78,29 +78,53 @@ Food : Item
                 }
             }
 
-            public Item GetRandomItem(Random random)
-            {
-                int ran = random.Next(0, itemTypes.Length);
-                return itemTypes[ran];
-            }
+            //public Item GetRandomItem(Random random)
+            //{
+            //    int ran = random.Next(0, itemTypes.Length);
+            //    return itemTypes[ran];
+
+
+            //}
+            //기본학습1 코드 156 : 랜덤한 아이템을 생성하기 위해 기능을 구현한 상황 좋았습니다.
+            //            다만 지금 상황에서 랜덤 매개변수로 전달할 필요가 있었을지 생각해주세요!
+            //          랜덤한 값이 필요한 것인지 랜덤생성기가 필요한 것인지 구분할 필요가 있습니다!
         }
 
 
 
 
-        public class Item //출력시 아이템 부분이 이상하게 출력되는데 이유가 무엇일까요...ㅠㅠㅠ
+        public class Item //출력시 아이템 부분이 이상하게 출력되는데 이유가 무엇일까요...ㅠㅠㅠ => 이름자체를 출력을 안하고 클래스아이템을 출력했었음.
         {
-            public string name;
-            public Item(string name)
+            public string name { get; set; }
+
+            // static 함수로 Item을 반환하도록 소스코드를 구성한다면
+            // 랜덤한 아이템 인스턴스가 필요시
+            // Item randomItem = Item.CreateRandom();
+            public Item CreateRandom()
             {
-                this.name = name;
+                Random random = new Random();
+                int value = random.Next(0, 3);
+                switch (value)
+                {
+                    case 0:
+                        return new Potion("포션");
+                    case 1:
+                        return new Weapon("무기");
+                    case 2:
+                        return new Armor("방어구");
+                    case 3:
+                        return new Food("음식");
+                    default:
+                        return null;
+                }
             }
+
         }
 
 
         public class Potion : Item
         {
-            public Potion(string name) : base(name)
+            public Potion(string name)
             {
                 this.name = name;
             }
@@ -108,7 +132,7 @@ Food : Item
 
         public class Weapon : Item
         {
-            public Weapon(string name) : base(name)
+            public Weapon(string name)
             {
                 this.name = name;
             }
@@ -116,7 +140,7 @@ Food : Item
 
         public class Armor : Item
         {
-            public Armor(string name) : base(name)
+            public Armor(string name)
             {
                 this.name = name;
             }
@@ -124,16 +148,16 @@ Food : Item
 
         public class Food : Item
         {
-            public Food(string name) : base(name)
+            public Food(string name)
             {
                 this.name = name;
             }
         }
         static void Main(string[] args)
         {
-            Random random = new Random();
             Inventory inventory = new Inventory();
-            Item item;
+            Item item = new Item();
+
 
             Console.WriteLine("--------------------------------------");
             Console.WriteLine("인벤토리 시스템입니다.");
@@ -146,6 +170,7 @@ Food : Item
                 Console.Write("숫자를 입력해주세요: ");
                 string input = Console.ReadLine();
                 bool correct = int.TryParse(input, out int index);
+                Item randomItem = item.CreateRandom();
 
                 if (correct == false)
                 {
@@ -153,7 +178,7 @@ Food : Item
                 }
                 else if (index == 0)
                 {
-                    inventory.AddInventoryItem(inventory.GetRandomItem(random));
+                    inventory.AddInventoryItem(randomItem);
                 }
                 else if (index > 0 && index < 10)
                 {
